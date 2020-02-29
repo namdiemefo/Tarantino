@@ -31,6 +31,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(), MainNav
     var mLayoutId = R.layout.activity_main
         @Inject set
 
+   var client: Client? = null
+    @Inject set
+
+
     var mBinder: ActivityMainBinding? = null
     var pd: ProgressBar? = null
 
@@ -81,9 +85,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(), MainNav
                 return
             }
 
-            val client = Client()
-            val movieResponseCall: Call<Response> = client.getApi().getTopRatedMovies(BuildConfig.MOVIE_DB_API_TOKEN)
-            movieResponseCall.enqueue(object : Callback<Response> {
+            val movieResponseCall: Call<Response>? = client?.getApi()?.getTopRatedMovies(BuildConfig.MOVIE_DB_API_TOKEN)
+            movieResponseCall?.enqueue(object : Callback<Response> {
                 override fun onResponse(call: Call<Response>, response: retrofit2.Response<Response>) {
                     val movies = response.body()?.result
                     if (movies == null) {
@@ -118,5 +121,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(), MainNav
             }
             pd?.visibility = View.GONE
         }
+    }
+
+    override fun onResume() {
+        loadMovies()
+        super.onResume()
     }
 }
